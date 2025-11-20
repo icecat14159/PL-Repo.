@@ -16,3 +16,4 @@
    - [HW6](https://github.com/icecat14159/PL-Repo./blob/main/HW06_%E6%9B%B8%E7%B1%8D%E6%B8%85%E5%96%AE2.ipynb)
  - 專題連結區
    ---
+   - [提案簡報](https://www.canva.com/design/DAG5JeIAvPs/LlJdgvb4HQ7s0yHEz_eHrw/edit?utm_content=DAG5JeIAvPs&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
