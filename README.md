@@ -19,6 +19,7 @@
    - [提案簡報](https://www.canva.com/design/DAG5JeIAvPs/LlJdgvb4HQ7s0yHEz_eHrw/edit?utm_content=DAG5JeIAvPs&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
    - [提案影片](https://youtu.be/LoHRQU6lJt4)
    - [專案程式](追番清單.ipynb)
+   - [成果影片](https://youtu.be/VlJmnDMsL8M?si=MAII2bRVMMk9X1fY)
 
   📺 追番清單管理系統（Gradio + Google Sheet）
   
