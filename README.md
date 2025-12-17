@@ -198,31 +198,21 @@ def add_empty_row(table_df, media):
 
   df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
   return df
-# gradio用 刪除資料列
 def delete_and_refresh(record_id, media):
-  #防呆ID
   if record_id is None:
     return read_data(media)
   try:
     record_id = int(record_id)
   except:
     return read_data(media)
-
   df = read_data(media)
-
   if record_id not in df["ID"].values:
     return df
-
   # 執行刪除
   df = df[df["ID"] != record_id].reset_index(drop=True)
-
-  # 防呆整表被清空
   if df.empty:
     return df
-
-  #重排ID
   df["ID"] = range(1, len(df) + 1)
-
   write_data(df, media)
   return read_data(media)
 ```
@@ -245,18 +235,14 @@ ALERT_COLUMNS = [
 
 def get_alert_table(media):
   df = read_data(media)
-
   if df.empty:
       return df
-
   threshold = ALERT_RULES[media]
-
   alert_df = df[
       (df["狀態"] == "未完結") &
       (df["距離上次紀錄(天)"].notna()) &
       (df["距離上次紀錄(天)"] >= threshold)
   ]
-
   return alert_df.reset_index(drop=True)
 ```
 ### 第七步:跨媒體偵測
@@ -387,38 +373,6 @@ def save_snapshot(df):
 ```
 ### 第十步:構建用來蒐集資料的parsers
 ```bash
-# ---------- Parser ----------
-CHINESE_NUM_MAP = {
-    "零": 0,
-    "一": 1,
-    "二": 2,
-    "三": 3,
-    "四": 4,
-    "五": 5,
-    "六": 6,
-    "七": 7,
-    "八": 8,
-    "九": 9,
-    "十": 10
-}
-
-def chinese_to_int(s):
-    # 只處理 1～99 卷（對輕小說完全夠用）
-    if s.isdigit():
-        return int(s)
-
-    if s == "十":
-        return 10
-    if s.startswith("十"):
-        return 10 + CHINESE_NUM_MAP.get(s[1], 0)
-    if s.endswith("十"):
-        return CHINESE_NUM_MAP.get(s[0], 0) * 10
-    if "十" in s:
-        a, b = s.split("十")
-        return CHINESE_NUM_MAP.get(a, 0) * 10 + CHINESE_NUM_MAP.get(b, 0)
-
-    return CHINESE_NUM_MAP.get(s, 0)
-
 
 def parse_lnovel(url):
     try:
@@ -459,65 +413,8 @@ def parse_manhuagui(url):
     except:
         return "未知"
 
-
 def parse_bahamut(url):
     return "請手動更新"
-CHINESE_NUM = "零一二三四五六七八九十百千"
-
-def parse_wenku8(url):
-    try:
-        headers = {
-            "User-Agent": "Mozilla/5.0"
-        }
-
-        # 🔁 reader.php → index.php
-        if "reader.php" in url:
-            aid = re.search(r"aid=(\d+)", url)
-            if aid:
-                url = f"https://www.wenku8.net/modules/article/index.php?aid={aid.group(1)}"
-
-        resp = requests.get(url, headers=headers, timeout=10)
-        resp.encoding = "gbk"  # ⭐ wenku8 是 GBK 編碼
-        soup = BeautifulSoup(resp.text, "html.parser")
-
-        chapters = []
-
-        # 章節連結格式：第XXX章
-        for a in soup.select("a"):
-            text = a.get_text(strip=True)
-
-            if re.match(r"第\s*\d+\s*章", text):
-                chapters.append(text)
-
-        if not chapters:
-            return "未知"
-
-        # wenku8 是「舊 → 新」排列，取最後一章
-        return chapters[-1]
-
-    except Exception as e:
-        return "未知"
-
-def parse_linovelib(url):
-    try:
-        headers = {
-            "User-Agent": "Mozilla/5.0"
-        }
-
-        resp = requests.get(url, headers=headers, timeout=10)
-        resp.encoding = resp.apparent_encoding
-        soup = BeautifulSoup(resp.text, "html.parser")
-
-        # linovelib 最新章節通常在「最新章節」區塊
-        # 常見格式：第XXX話 / 第XXX章
-        for text in soup.stripped_strings:
-            if re.match(r"第\s*\d+\s*[話章]", text):
-                return text.strip()
-
-        return "未知"
-
-    except Exception as e:
-        return "未知"
 
 def parse_update_date(url):
     try:
@@ -546,15 +443,10 @@ def parse_generic(url):
     except:
         return "未知"
 
-
 PARSERS = {
     "manhuagui.com": parse_manhuagui,
     "www.manhuagui.com": parse_manhuagui,
     "ani.gamer.com.tw": parse_bahamut,
-    "wenku8.net": parse_wenku8,
-    "www.wenku8.net": parse_wenku8,
-    "tw.linovelib.com": parse_linovelib,
-    "www.linovelib.com": parse_linovelib,
     "lnovel.tw": parse_lnovel,
     "www.lnovel.tw": parse_lnovel,
 }
